@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industrial IoT Predictive Maintenance - Edge AI System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div class="header">
+        <h1>🏭 Industrial IoT Predictive Maintenance</h1>
+        <p>Edge AI • Federated Learning • Blockchain Security • Digital Twin</p>
+    </div>
+
+    <div class="dashboard">
+        <!-- Real-time Sensor Data -->
+        <div class="card">
+            <h2>📡 Edge Node - sim_esp32_01</h2>
+            <div class="controls">
+                <button class="btn" onclick="toggleSimulation()">Start Simulation</button>
+                <button class="btn" onclick="injectAnomaly()">Inject Anomaly</button>
+            </div>
+            <div class="sensor-grid">
+                <div class="sensor-value">
+                    <div class="label">Temperature</div>
+                    <div class="value" id="temp-value">--°C</div>
+                </div>
+                <div class="sensor-value">
+                    <div class="label">Humidity</div>
+                    <div class="value" id="humidity-value">--%</div>
+                </div>
+                <div class="sensor-value">
+                    <div class="label">Vibration</div>
+                    <div class="value" id="vibration-value">--g</div>
+                </div>
+                <div class="sensor-value">
+                    <div class="label">Current</div>
+                    <div class="value" id="current-value">--A</div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="sensorChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Anomaly Detection -->
+        <div class="card">
+            <h2>🤖 Edge AI Anomaly Detection</h2>
+            <div style="margin-bottom: 1rem;">
+                <span class="status-indicator status-normal" id="ai-status"></span>
+                <span id="ai-status-text">System Normal</span>
+            </div>
+            <div id="anomaly-alerts"></div>
+            <div class="chart-container">
+                <canvas id="anomalyChart"></canvas>
+            </div>
+            <div style="margin-top: 1rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Confidence Level:</span>
+                    <span id="confidence-level">95%</span>
+                </div>
+                <div class="accuracy-bar">
+                    <div class="accuracy-fill" id="confidence-bar" style="width: 95%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Federated Learning -->
+        <div class="card">
+            <h2>🔗 Federated Learning Network</h2>
+            <div id="federated-nodes">
+                <div class="federated-node">
+                    <div class="node-status">
+                        <span>Node ESP32_01</span>
+                        <span class="status-indicator status-normal"></span>
+                    </div>
+                    <div>Accuracy: <span id="node1-acc">87%</span></div>
+                    <div class="accuracy-bar">
+                        <div class="accuracy-fill" style="width: 87%;"></div>
+                    </div>
+                </div>
+                <div class="federated-node">
+                    <div class="node-status">
+                        <span>Node ESP32_02</span>
+                        <span class="status-indicator status-normal"></span>
+                    </div>
+                    <div>Accuracy: <span id="node2-acc">91%</span></div>
+                    <div class="accuracy-bar">
+                        <div class="accuracy-fill" style="width: 91%;"></div>
+                    </div>
+                </div>
+                <div class="federated-node">
+                    <div class="node-status">
+                        <span>Node ESP32_03</span>
+                        <span class="status-indicator status-warning"></span>
+                    </div>
+                    <div>Accuracy: <span id="node3-acc">83%</span></div>
+                    <div class="accuracy-bar">
+                        <div class="accuracy-fill" style="width: 83%;"></div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; text-align: center;">
+                <div>Global Model Accuracy: <strong id="global-accuracy">89%</strong></div>
+                <div style="font-size: 0.8rem; opacity: 0.7;">Next FL Round: <span id="fl-countdown">45s</span></div>
+            </div>
+        </div>
+
+        <!-- Blockchain Security -->
+        <div class="card">
+            <h2>⛓️ Blockchain Security</h2>
+            <div style="margin-bottom: 1rem;">
+                <div>Network: <strong>Private PoA</strong></div>
+                <div>Nodes: <strong>5 Active</strong></div>
+                <div>Block Height: <strong id="block-height">1,247</strong></div>
+            </div>
+            <div id="blockchain-blocks">
+                <div class="blockchain-block">
+                    <div>Block #1247</div>
+                    <div class="block-hash">Hash: 0x5f7a2b8c...</div>
+                    <div>FL Update: Node_01 → Node_02</div>
+                    <div style="font-size: 0.7rem; opacity: 0.6;">2 mins ago</div>
+                </div>
+                <div class="blockchain-block">
+                    <div>Block #1246</div>
+                    <div class="block-hash">Hash: 0x3e9d1f4a...</div>
+                    <div>Anomaly Alert: ESP32_03</div>
+                    <div style="font-size: 0.7rem; opacity: 0.6;">5 mins ago</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Digital Twin -->
+        <div class="card digital-twin">
+            <h2>🔮 Digital Twin & Predictive Analytics</h2>
+            <div class="twin-status">
+                <div class="twin-component">
+                    <div>Motor Health</div>
+                    <div class="health-score health-excellent" id="motor-health">94</div>
+                    <div style="font-size: 0.8rem;">Expected: 2.3 days</div>
+                </div>
+                <div class="twin-component">
+                    <div>Bearing Status</div>
+                    <div class="health-score health-good" id="bearing-health">78</div>
+                    <div style="font-size: 0.8rem;">Expected: 12 hours</div>
+                </div>
+                <div class="twin-component">
+                    <div>Temperature Control</div>
+                    <div class="health-score health-warning" id="temp-health">65</div>
+                    <div style="font-size: 0.8rem;">Expected: 6 hours</div>
+                </div>
+                <div class="twin-component">
+                    <div>Overall System</div>
+                    <div class="health-score health-good" id="overall-health">82</div>
+                    <div style="font-size: 0.8rem;">Next maintenance: 8 hours</div>
+                </div>
+            </div>
+            <div class="chart-container" style="height: 150px; margin-top: 1rem;">
+                <canvas id="predictiveChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Maintenance Scheduler -->
+        <div class="card">
+            <h2>🔧 Maintenance Scheduler</h2>
+            <div style="margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>🔴 Critical</span>
+                    <span>2 items</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>🟡 Warning</span>
+                    <span>5 items</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>🟢 Scheduled</span>
+                    <span>12 items</span>
+                </div>
+            </div>
+            <div id="maintenance-queue">
+                <div style="background: rgba(255, 82, 82, 0.2); padding: 0.8rem; border-radius: 6px; margin: 0.5rem 0; border-left: 3px solid #ff5252;">
+                    <div><strong>ESP32_03 Bearing Replacement</strong></div>
+                    <div style="font-size: 0.8rem; opacity: 0.7;">Due: 6 hours</div>
+                </div>
+                <div style="background: rgba(255, 167, 38, 0.2); padding: 0.8rem; border-radius: 6px; margin: 0.5rem 0; border-left: 3px solid #ffa726;">
+                    <div><strong>Temperature Sensor Calibration</strong></div>
+                    <div style="font-size: 0.8rem; opacity: 0.7;">Due: 1 day</div>
+                </div>
+                <div style="background: rgba(78, 205, 196, 0.2); padding: 0.8rem; border-radius: 6px; margin: 0.5rem 0; border-left: 3px solid #4ecdc4;">
+                    <div><strong>Routine Motor Inspection</strong></div>
+                    <div style="font-size: 0.8rem; opacity: 0.7;">Due: 3 days</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/app.js"></script>
+</body>
+</html>
