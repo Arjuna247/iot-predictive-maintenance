@@ -41,29 +41,86 @@ A comprehensive Edge AI-powered predictive maintenance dashboard featuring real-
 
 ## 🛠️ Installation & Setup
 
-### Prerequisites
+### Two Versions Available
+
+This project now includes **two frontend implementations**:
+1. **React Version** (recommended) - Modern React + Vite with hot reloading
+2. **Vanilla JS Version** - Pure HTML/CSS/JS for simple deployment
+
+### Option 1: React Version (Recommended)
+
+#### Prerequisites
+- Node.js 18+ and npm
+- Modern web browser
+
+#### Quick Start
+```bash
+# Navigate to React app directory
+cd react-app
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+The app will be available at [http://localhost:5173/](http://localhost:5173/)
+
+#### Build for Production
+```bash
+# Create optimized production build
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+### Option 2: Vanilla JS Version
+
+#### Prerequisites
 - Web browser (Chrome, Firefox, Safari, Edge)
 - VS Code (recommended)
 - Live Server extension for VS Code
 
-### Quick Start
+#### Quick Start
 
-1. **Clone or download** the project files
-2. **Open in VS Code**
-3. **Install Live Server extension** (if not already installed)
-4. **Right-click on `index.html`** → "Open with Live Server"
-5. **Start simulation** and begin monitoring!
+1. **Open in VS Code**
+2. **Install Live Server extension** (if not already installed)
+3. **Right-click on `index.html`** → "Open with Live Server"
+4. **Start simulation** and begin monitoring!
 
 ### Project Structure
 ```
 iot-predictive-maintenance/
 │
-├── index.html              # Main HTML file
+├── react-app/              # React + Vite version
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Dashboard.jsx
+│   │   │   └── Dashboard.css
+│   │   ├── utils/
+│   │   │   └── dataGenerator.js
+│   │   ├── App.jsx
+│   │   ├── App.css
+│   │   └── main.jsx
+│   ├── package.json
+│   └── vite.config.js
+│
+├── iot/                    # Python backend services
+│   ├── client_sim.py       # ESP32 simulator
+│   ├── esp32_data_server.py # Flask API
+│   ├── federated_ml.py     # Federated learning
+│   ├── distill.py          # Model distillation
+│   ├── model_utils.py      # ML utilities
+│   └── generate_dummy_data.py
+│
+├── index.html              # Vanilla JS version
 ├── styles/
-│   └── main.css            # All CSS styles
+│   └── main.css
 ├── scripts/
-│   └── app.js              # JavaScript functionality
-├── assets/                 # Images and other assets
+│   └── app.js
+├── requirements.txt        # Python dependencies
 └── README.md              # This file
 ```
 
@@ -152,11 +209,28 @@ EXPOSE 80
 ## 🔍 Technical Details
 
 ### Technologies Used
+
+#### React Version
+- **Frontend Framework**: React 18 with Vite
+- **UI Components**: Custom components with hooks
+- **Charts**: Chart.js 4+ with react-chartjs-2
+- **Icons**: Lucide React
+- **Styling**: CSS Modules, CSS Grid, Flexbox, CSS Variables
+- **Build Tool**: Vite for fast HMR and optimized builds
+- **Architecture**: Component-based, hooks-driven
+
+#### Vanilla JS Version
 - **Frontend**: HTML5, CSS3, JavaScript (ES6+)
 - **Charts**: Chart.js 3.9.1
 - **Styling**: CSS Grid, Flexbox, CSS Variables
 - **Animation**: CSS Keyframes, Transitions
 - **Architecture**: Modular JavaScript, Event-driven
+
+#### Python Backend
+- **Framework**: Flask with Flask-CORS
+- **ML Libraries**: Scikit-learn, NumPy, Pandas
+- **Visualization**: Matplotlib
+- **Data Format**: JSONL for streaming sensor data
 
 ### Data Format
 The system uses JSON format for IoT data:
