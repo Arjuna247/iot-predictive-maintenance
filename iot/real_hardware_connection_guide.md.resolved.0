@@ -1,0 +1,54 @@
+# Connecting Real ESP32 Hardware
+
+Since we have already set up the Backend Server and Frontend Dashboard, connecting real hardware is very simple. You just need to configure your ESP32 to send data to your computer instead of using the python simulator.
+
+## 1. Stop the Simulator
+Stop the [auto_feed.py](file:///c:/Users/Gokulakrishna/Desktop/iot-predictive-maintenance/iot/auto_feed.py) script if it is running. You keep the [esp32_data_server.py](file:///c:/Users/Gokulakrishna/Desktop/iot-predictive-maintenance/iot/esp32_data_server.py) and the React App running.
+
+## 2. Find your Computer's IP Address
+The ESP32 needs to know where to send the data.
+- Open a terminal and run `ipconfig`.
+- Look for **IPv4 Address** (usually something like `192.168.1.5` or `192.168.0.101`).
+
+## 3. Flash your ESP32
+Write code for your ESP32 (using Arduino IDE or MicroPython) to:
+1.  Connect to your Wi-Fi.
+2.  Send an **HTTP POST** request to `http://<YOUR_IP_ADDRESS>:5000/sensor-data`.
+3.  Send the payload in **JSON format**.
+
+### Example Arduino C++ Code Snippet
+```cpp
+#include <WiFi.h>
+#include <HTTPClient.h>
+
+const char* ssid = "YOUR_WIFI_NAME";
+const char* password = "YOUR_WIFI_PASSWORD";
+String serverName = "http://192.168.1.5:5000/sensor-data"; // REPLACE WITH YOUR IP
+
+void loop() {
+  if(WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    http.begin(serverName);
+    http.addHeader("Content-Type", "application/json");
+    
+    // Construct JSON payload
+    // You must use these EXACT field names (case-sensitive)
+    String jsonPayload = "{";
+    jsonPayload += "\"deviceId\": \"ESP32_REAL_01\",";
+    jsonPayload += "\"Temperature\": " + String(readTemp()) + ",";
+    jsonPayload += "\"Humidity\": " + String(readHumidity()) + ",";
+    jsonPayload += "\"Vibration\": " + String(readVibration()) + ",";
+    jsonPayload += "\"Current\": " + String(readCurrent());
+    jsonPayload += "}";
+    
+    int httpResponseCode = http.POST(jsonPayload);
+    http.end();
+  }
+  delay(1000);
+}
+```
+
+## 4. Verify
+Once your ESP32 starts sending data:
+1.  You will see "Data received successfully" logs in your Python server terminal.
+2.  Your Dashboard will automatically start showing the values from the real hardware.

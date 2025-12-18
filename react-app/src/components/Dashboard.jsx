@@ -11,8 +11,9 @@ import {
   Legend,
   Filler
 } from 'chart.js';
-import { Play, Pause, AlertTriangle } from 'lucide-react';
+import { Play, Pause, AlertTriangle, RefreshCw } from 'lucide-react';
 import { generateSensorData, detectAnomalies, generateRandomHash } from '../utils/dataGenerator';
+import { fetchLatestData } from '../services/api';
 import './Dashboard.css';
 
 // Register Chart.js components
@@ -34,7 +35,8 @@ function Dashboard() {
     temperature: 0,
     humidity: 0,
     vibrationMagnitude: 0,
-    current: 0
+    current: 0,
+    deviceId: 'Waiting...'
   });
   const [anomalyResult, setAnomalyResult] = useState({ score: 0, anomalies: [] });
   const [sensorHistory, setSensorHistory] = useState([]);
@@ -58,15 +60,59 @@ function Dashboard() {
   });
   const [flCountdown, setFlCountdown] = useState(45);
 
-  // Simulation loop
+  // Simulation / Data Polling loop
   useEffect(() => {
     let interval;
     if (simulationRunning) {
-      interval = setInterval(() => {
-        const data = generateSensorData(anomalyInjected);
-        setSensorData(data);
+      interval = setInterval(async () => {
+        // Attempt to fetch real data
+        const response = await fetchLatestData();
 
-        const result = detectAnomalies(data);
+        let data;
+        let result;
+
+        if (response && response.count > 0) {
+          // Use the first available device or a specific one
+          const deviceKeys = Object.keys(response.data);
+          const rawData = response.data[deviceKeys[0]]; // Pick first device
+
+          // Map backend data to frontend format
+          data = {
+            deviceId: rawData.deviceId,
+            timestamp: rawData.timestamp || Date.now(),
+            temperature: rawData.Temperature || 0,
+            humidity: rawData.Humidity || 0,
+            vibrationMagnitude: rawData.Vibration || 0,
+            current: rawData.Current || 0,
+            // If backend sends anomaly flag, use it, otherwise detect locally
+          };
+
+          // Use backend anomaly flag if present, else use local detection
+          if (rawData.Anomaly !== undefined) {
+            const score = rawData.Anomaly ? 0.8 : 0.1;
+            result = {
+              score: score,
+              anomalies: rawData.Anomaly ? ["External Anomaly Signal"] : []
+            };
+            // Still run local detection for detailed messages if needed
+            const localDetection = detectAnomalies(data);
+            if (localDetection.score > result.score) {
+              result = localDetection;
+            }
+          } else {
+            result = detectAnomalies(data);
+          }
+
+        } else {
+          // Fallback to mock if API fails or no data (optional, or just wait)
+          // For now, let's just wait effectively acting as "no data"
+          // Or we could keep the mock as a fallback? 
+          // The user asked to LINK it, so let's stick to trying to get real data.
+          // If we fail, we just don't update.
+          return;
+        }
+
+        setSensorData(data);
         setAnomalyResult(result);
 
         // Update histories
@@ -112,7 +158,7 @@ function Dashboard() {
           });
         }
 
-        // Auto-reset anomaly
+        // Auto-reset anomaly (only for UI state, doesn't affect backend)
         if (anomalyInjected && Math.random() < 0.1) {
           setAnomalyInjected(false);
         }
@@ -232,10 +278,10 @@ function Dashboard() {
       <div className="dashboard-grid">
         {/* Sensor Card */}
         <div className="card">
-          <h2>📡 Edge Node - sim_esp32_01</h2>
+          <h2>📡 Edge Node - {sensorData.deviceId}</h2>
           <div className="controls">
             <button onClick={toggleSimulation}>
-              {simulationRunning ? <><Pause size={16} /> Stop Simulation</> : <><Play size={16} /> Start Simulation</>}
+              {simulationRunning ? <><Pause size={16} /> Stop Monitoring</> : <><Play size={16} /> Start Monitoring</>}
             </button>
             <button onClick={injectAnomaly} className="btn-danger">
               <AlertTriangle size={16} /> Inject Anomaly
@@ -273,8 +319,8 @@ function Dashboard() {
             <span className={`status-indicator ${getStatusClass(anomalyResult.score)}`}></span>
             <span>
               {anomalyResult.score > 0.7 ? 'Critical Anomaly Detected' :
-               anomalyResult.score > 0.3 ? 'Warning: Anomaly Detected' :
-               'System Normal'}
+                anomalyResult.score > 0.3 ? 'Warning: Anomaly Detected' :
+                  'System Normal'}
             </span>
           </div>
 
@@ -287,7 +333,7 @@ function Dashboard() {
           </div>
 
           <div className="chart-container">
-            <Line data={anomalyChartData} options={{...chartOptions, scales: {...chartOptions.scales, y: {...chartOptions.scales.y, min: 0, max: 1}}}} />
+            <Line data={anomalyChartData} options={{ ...chartOptions, scales: { ...chartOptions.scales, y: { ...chartOptions.scales.y, min: 0, max: 1 } } }} />
           </div>
 
           <div style={{ marginTop: '1rem' }}>
