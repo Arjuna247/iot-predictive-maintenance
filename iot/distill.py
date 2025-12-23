@@ -104,7 +104,7 @@ class ModelDistillation:
         if self.student_model is None:
             raise ValueError("Student model not created. Call create_student_model() first.")
 
-        print("\n<“ Starting Knowledge Distillation...")
+        print("\n<ï¿½ Starting Knowledge Distillation...")
         print(f"   Teacher: {type(self.teacher_model).__name__}")
         print(f"   Student: {type(self.student_model).__name__}")
         print(f"   Temperature: {self.temperature}")
@@ -140,17 +140,18 @@ class ModelDistillation:
         Returns:
             Dictionary with comparison metrics
         """
-        print("\n=Ê Model Comparison:")
+        print("\n=ï¿½ Model Comparison:")
         print("="*60)
 
         # Evaluate teacher
-        print("\n=h<ë Teacher Model:")
+        print("\n=h
+<ï¿½ Teacher Model:")
         teacher_acc, teacher_f1 = evaluate_model(
             self.teacher_model, X_test, y_test, verbose=True
         )
 
         # Evaluate student
-        print("\n<“ Student Model:")
+        print("\n<ï¿½ Student Model:")
         student_acc, student_f1 = evaluate_model(
             self.student_model, X_test, y_test, verbose=True
         )
@@ -160,12 +161,12 @@ class ModelDistillation:
         student_size = self._estimate_model_size(self.student_model)
         compression_ratio = teacher_size / student_size if student_size > 0 else 0
 
-        print("\n=æ Model Size Comparison:")
+        print("\n=ï¿½ Model Size Comparison:")
         print(f"   Teacher size: ~{teacher_size:.2f} KB")
         print(f"   Student size: ~{student_size:.2f} KB")
         print(f"   Compression ratio: {compression_ratio:.2f}x")
 
-        print("\n=É Performance Gap:")
+        print("\n=ï¿½ Performance Gap:")
         print(f"   Accuracy loss: {(teacher_acc - student_acc)*100:.2f}%")
         print(f"   F1 Score loss: {(teacher_f1 - student_f1)*100:.2f}%")
 
@@ -256,7 +257,7 @@ def distill_model_for_edge(
 
 if __name__ == "__main__":
     print("\n" + "="*60)
-    print(">à Knowledge Distillation for Edge Deployment")
+    print(">ï¿½ Knowledge Distillation for Edge Deployment")
     print("="*60)
 
     # Load data
@@ -276,7 +277,8 @@ if __name__ == "__main__":
     X_train, X_test, y_train, y_test = preprocess_data(df, features=features)
 
     # Train teacher model (large Random Forest)
-    print("\n=h<ë Training Teacher Model (Large Random Forest)...")
+    print("\n=h
+<ï¿½ Training Teacher Model (Large Random Forest)...")
     teacher_model = RandomForestClassifier(
         n_estimators=100,
         max_depth=15,
@@ -307,7 +309,7 @@ if __name__ == "__main__":
     print("\n" + "="*60)
     print(" Knowledge Distillation Complete!")
     print("="*60)
-    print("\n=¡ Student models are ready for edge deployment!")
+    print("\n=ï¿½ Student models are ready for edge deployment!")
     print("   - Smaller size (fits on ESP32/embedded devices)")
     print("   - Faster inference")
     print("   - Minimal accuracy loss\n")
