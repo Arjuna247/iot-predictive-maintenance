@@ -583,4 +583,4 @@ document.addEventListener('keydown', function(e) {
 
 console.log('🏭 Industrial IoT Predictive Maintenance System Initialized');
 console.log('💡 Press Ctrl+S to start/stop simulation');
-console.log('⚠️ Press Ctrl+A to inject anomaly');
+console.log('⚠️ Press Ctrl+A to inject anomaly'); 

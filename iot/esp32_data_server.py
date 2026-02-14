@@ -8,8 +8,24 @@ from flask_cors import CORS
 import json
 import os
 from datetime import datetime
+from db import sensor_collection 
 import threading
 import time
+import joblib
+import numpy as np
+
+# -----------------------------
+# Load Trained ML Model
+# -----------------------------
+MODEL_PATH = "models/federated_model.pkl"
+
+if os.path.exists(MODEL_PATH):
+    model = joblib.load(MODEL_PATH)
+    print("✅ ML model loaded successfully")
+else:
+    model = None
+    print("⚠ ML model not found. Anomaly detection disabled.")
+
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend access
@@ -82,46 +98,93 @@ def home():
 
 @app.route("/sensor-data", methods=["POST"])
 def receive_data():
-    """Receive sensor data from IoT devices"""
     try:
         data = request.get_json()
-
+        print("Received data:", data)
         if not data:
             return jsonify({"status": "error", "message": "No data provided"}), 400
 
-        # Validate required fields
-        required_fields = ["deviceId", "Temperature", "Humidity", "Vibration", "Current"]
-        missing_fields = [field for field in required_fields if field not in data]
+        # Required fields from ESP32
+        required_fields = [
+            "device_id",
+            "temperature",
+            "humidity",
+            "ax",
+            "ay",
+            "az",
+            "current_voltage"
+        ]
 
-        if missing_fields:
+        missing = [f for f in required_fields if f not in data]
+        if missing:
             return jsonify({
                 "status": "error",
-                "message": f"Missing required fields: {', '.join(missing_fields)}"
+                "message": f"Missing fields: {', '.join(missing)}"
+            }), 400
+        if data["temperature"] is None or data["humidity"] is None:
+            return jsonify({
+                "status": "error",
+                "message": "Missing fields"
             }), 400
 
-        # Add server timestamp
-        data["server_timestamp"] = datetime.now().isoformat()
+        # ---- Normalize for ML ----
+        normalized = {
+            "deviceId": data["device_id"],
+            "Temperature": float(data["temperature"]),
+            "Humidity": float(data["humidity"]),
+            "Vibration": (data["ax"]**2 + data["ay"]**2 + data["az"]**2) ** 0.5,
+            "Current": float(data["current_voltage"]),
+            #"Anomaly": 0,  # default (ML will update later)
+            "server_timestamp": datetime.now().isoformat()
+        }
+        if model is not None:
+            try:
+                features = np.array([[
+                    normalized["Temperature"],
+                    normalized["Humidity"],
+                    normalized["Vibration"],
+                    normalized["Current"]
+                ]])
 
-        # Store in memory
-        sensor_data_list.append(data)
+                prediction = model.predict(features)
+                normalized["Anomaly"] = int(prediction[0])
 
-        # Append to file (one JSON per line)
+                if normalized["Anomaly"] == 1:
+                    print("🚨 ANOMALY DETECTED 🚨")
+                else:
+                    print("✅ Normal Reading")
+
+            except Exception as e:
+                print("Prediction error:", e)
+                normalized["Anomaly"] = 0
+        else:
+            normalized["Anomaly"] = 0
+        
+        # Save to MongoDB
+        try:
+            sensor_collection.insert_one(dict(normalized))
+        except Exception as e:
+            print(f"MongoDB error: {e}")
+
+        # Save in memory
+        sensor_data_list.append(normalized)
+
+        # Save to file (JSONL)
         with open(DATA_FILE, "a") as f:
-            f.write(json.dumps(data) + "\n")
+            f.write(json.dumps(normalized) + "\n")
 
-        # Update statistics
-        update_stats(data.get("deviceId", "unknown"))
+        # Update stats
+        update_stats(normalized["deviceId"])
 
         return jsonify({
             "status": "ok",
-            "message": "Data received successfully",
-            "device_id": data.get("deviceId"),
-            "timestamp": data.get("timestamp")
+            "device_id": normalized["deviceId"]
         }), 200
 
     except Exception as e:
-        print(f"Error receiving data: {e}")
+        print(f"Server error: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
+
 
 
 @app.route("/stats", methods=["GET"])

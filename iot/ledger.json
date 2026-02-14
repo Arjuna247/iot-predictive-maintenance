@@ -1,60 +1,104 @@
 [
     {
         "index": 0,
-        "timestamp": 1757149062.553378,
+        "timestamp": 1771057614.9754772,
         "data": "Genesis Block",
         "previous_hash": "0",
-        "hash": "85bbacadaaded3b6af8af74ce403ddab845c74d6d29bf05f899965ff984c3fe8"
+        "hash": "e7572648cf9c6db1355319b03a85e92187cbb7d48e99bc9276f2b869a6662b37"
     },
     {
         "index": 1,
-        "timestamp": 1757149063.6403992,
+        "timestamp": 1771057616.0470176,
         "data": {
             "round": 1,
-            "global_accuracy": 1.0,
-            "global_f1": 1.0,
-            "feature_importances": [
-                0.3426459139478195,
-                0.0003642530913093333,
-                0.4926676070993125,
-                0.16432222586155865
-            ]
+            "clients": 3,
+            "accuracy": 1.0,
+            "f1_score": 1.0,
+            "feature_importance": [
+                0.5856839873412633,
+                0.00011151622716532989,
+                0.2546543209108166,
+                0.15955017552075487
+            ],
+            "timestamp": 1771057616.0470176
         },
-        "previous_hash": "85bbacadaaded3b6af8af74ce403ddab845c74d6d29bf05f899965ff984c3fe8",
-        "hash": "5ef004a12f4e18cda486e45fef1b7ddc370991290d45396057f7e1a64e1c71f7"
+        "previous_hash": "e7572648cf9c6db1355319b03a85e92187cbb7d48e99bc9276f2b869a6662b37",
+        "hash": "2ab9c05780ee71b539f556270f314dd430d56a04e498c6faa00e29c96f764e01"
     },
     {
         "index": 2,
-        "timestamp": 1757149064.85495,
+        "timestamp": 1771057617.1135294,
         "data": {
             "round": 2,
-            "global_accuracy": 1.0,
-            "global_f1": 1.0,
-            "feature_importances": [
-                0.3426459139478195,
-                0.0003642530913093333,
-                0.4926676070993125,
-                0.16432222586155865
-            ]
+            "clients": 3,
+            "accuracy": 1.0,
+            "f1_score": 1.0,
+            "feature_importance": [
+                0.5953913197782614,
+                0.0002652861906632589,
+                0.24983979653642194,
+                0.1545035974946534
+            ],
+            "timestamp": 1771057617.1135294
         },
-        "previous_hash": "5ef004a12f4e18cda486e45fef1b7ddc370991290d45396057f7e1a64e1c71f7",
-        "hash": "39cb60c8d3c38b0632c5263fdc9c1f0b9c862508d9530738fa970ad1c543621f"
+        "previous_hash": "2ab9c05780ee71b539f556270f314dd430d56a04e498c6faa00e29c96f764e01",
+        "hash": "89f88c29738374828b3b71528a35362167cd9092add23fc1f5978ec1f4f406a3"
     },
     {
         "index": 3,
-        "timestamp": 1757149065.9574463,
+        "timestamp": 1771057618.1809914,
         "data": {
             "round": 3,
-            "global_accuracy": 1.0,
-            "global_f1": 1.0,
-            "feature_importances": [
-                0.3426459139478195,
-                0.0003642530913093333,
-                0.4926676070993125,
-                0.16432222586155865
-            ]
+            "clients": 3,
+            "accuracy": 1.0,
+            "f1_score": 1.0,
+            "feature_importance": [
+                0.5935160041700178,
+                0.0019338924103343262,
+                0.2703213989562325,
+                0.13422870446341537
+            ],
+            "timestamp": 1771057618.1809914
         },
-        "previous_hash": "39cb60c8d3c38b0632c5263fdc9c1f0b9c862508d9530738fa970ad1c543621f",
-        "hash": "9e59fa391258b4c677d5444de3ead4855e31cd7a9f28c68d81860f5a310ef0d7"
+        "previous_hash": "89f88c29738374828b3b71528a35362167cd9092add23fc1f5978ec1f4f406a3",
+        "hash": "ff175ed5c43045d2b666c20d37dac972e04f4f35cdd0fe55357585279aaeece0"
+    },
+    {
+        "index": 4,
+        "timestamp": 1771057619.289311,
+        "data": {
+            "round": 4,
+            "clients": 3,
+            "accuracy": 1.0,
+            "f1_score": 1.0,
+            "feature_importance": [
+                0.6067818424927105,
+                0.0008525053957581792,
+                0.2573900343579141,
+                0.13497561775361724
+            ],
+            "timestamp": 1771057619.289311
+        },
+        "previous_hash": "ff175ed5c43045d2b666c20d37dac972e04f4f35cdd0fe55357585279aaeece0",
+        "hash": "102f855cba1ddf9be7ef7327f86d06788586602d708b96a8e0e603629c5f775d"
+    },
+    {
+        "index": 5,
+        "timestamp": 1771057620.395343,
+        "data": {
+            "round": 5,
+            "clients": 3,
+            "accuracy": 1.0,
+            "f1_score": 1.0,
+            "feature_importance": [
+                0.5952087031973905,
+                0.0014280345905780692,
+                0.25424554719481535,
+                0.14911771501721613
+            ],
+            "timestamp": 1771057620.395343
+        },
+        "previous_hash": "102f855cba1ddf9be7ef7327f86d06788586602d708b96a8e0e603629c5f775d",
+        "hash": "867f70fb2f3eac5dea13ab42f7e7602a5e666339d8d3840584d4d85e633f2830"
     }
 ]

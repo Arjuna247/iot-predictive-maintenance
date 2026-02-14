@@ -89,18 +89,17 @@ function Dashboard() {
 
           // Use backend anomaly flag if present, else use local detection
           if (rawData.Anomaly !== undefined) {
-            const score = rawData.Anomaly ? 0.8 : 0.1;
+            const isAnomaly = rawData.Anomaly === 1;
+
             result = {
-              score: score,
-              anomalies: rawData.Anomaly ? ["External Anomaly Signal"] : []
+              score: isAnomaly ? 1 : 0,
+              anomalies: isAnomaly ? ["🚨 ML Detected Anomaly"] : []
             };
-            // Still run local detection for detailed messages if needed
-            const localDetection = detectAnomalies(data);
-            if (localDetection.score > result.score) {
-              result = localDetection;
-            }
           } else {
-            result = detectAnomalies(data);
+            result = {
+              score: 0,
+              anomalies: []
+            };
           }
 
         } else {
@@ -268,8 +267,7 @@ function Dashboard() {
   };
 
   const getStatusClass = (score) => {
-    if (score > 0.7) return 'status-critical';
-    if (score > 0.3) return 'status-warning';
+    if (score === 1) return 'status-critical';
     return 'status-normal';
   };
 

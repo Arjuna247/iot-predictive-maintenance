@@ -24,3 +24,4 @@ jupyter==1.0.0
 
 # Additional useful libraries
 python-dotenv==1.0.0
+pymongo==4.7.1
