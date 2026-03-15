@@ -1,8 +1,3 @@
-"""
-ESP32 Data Server
-Flask server that receives and stores sensor data from IoT devices
-"""
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json

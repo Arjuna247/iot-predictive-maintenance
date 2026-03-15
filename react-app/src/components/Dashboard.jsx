@@ -198,11 +198,11 @@ function Dashboard() {
     setSimulationRunning(!simulationRunning);
   };
 
-  const injectAnomaly = () => {
-    if (simulationRunning) {
-      setAnomalyInjected(true);
-    }
-  };
+  // const injectAnomaly = () => {
+  //   if (simulationRunning) {
+  //     setAnomalyInjected(true);
+  //   }
+  // };
 
   // Chart data
   const sensorChartData = {
@@ -281,9 +281,9 @@ function Dashboard() {
             <button onClick={toggleSimulation}>
               {simulationRunning ? <><Pause size={16} /> Stop Monitoring</> : <><Play size={16} /> Start Monitoring</>}
             </button>
-            <button onClick={injectAnomaly} className="btn-danger">
+            {/* <button onClick={injectAnomaly} className="btn-danger">
               <AlertTriangle size={16} /> Inject Anomaly
-            </button>
+            </button> */}
           </div>
 
           <div className="sensor-grid">
