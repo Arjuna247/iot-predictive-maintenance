@@ -1,281 +1,218 @@
-# 🏭 Industrial IoT Predictive Maintenance System
+# Industrial IoT Predictive Maintenance System
 
-A comprehensive Edge AI-powered predictive maintenance dashboard featuring real-time IoT data simulation, anomaly detection, federated learning, blockchain security, and digital twin technology.
+An Edge AI-powered predictive maintenance platform featuring real-time IoT sensor simulation, anomaly detection, federated learning, blockchain audit logging, and digital twin modeling.
 
-## 🚀 Features
+---
 
-### 📡 **Real-time IoT Simulation**
-- Simulates ESP32-based sensor data (Temperature, Humidity, Vibration, Current)
-- MPU6050-style accelerometer and gyroscope data
-- JSON format data streaming with realistic patterns
+## Table of Contents
 
-### 🤖 **Edge AI Anomaly Detection**
-- Real-time fault detection algorithms
-- Multi-parameter threshold analysis
-- Dynamic confidence scoring
-- Visual alert system with color-coded indicators
+- [Overview](#overview)
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Project Structure](#project-structure)
+- [Usage](#usage)
+- [Configuration](#configuration)
+- [Technical Reference](#technical-reference)
+- [Browser Compatibility](#browser-compatibility)
+- [Deployment](#deployment)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [License](#license)
 
-### 🔗 **Federated Learning Network**
-- Multi-node ESP32 simulation
-- Distributed model training
-- Global model accuracy aggregation
-- Privacy-preserving learning (only model updates shared)
+---
 
-### ⛓️ **Blockchain Security**
-- Private Proof of Authority (PoA) network simulation
-- Immutable logging of system events
-- Real-time block generation
-- Cryptographic hash simulation
+## Overview
 
-### 🔮 **Digital Twin & Predictive Analytics**
-- Virtual equipment modeling
-- Component health prediction (Motor, Bearing, Temperature Control)
-- 12-hour degradation forecasting
-- Proactive maintenance scheduling
+This system provides a browser-based dashboard for monitoring industrial equipment health in real time. It simulates ESP32-based sensor nodes, applies edge AI anomaly detection, and models equipment degradation using digital twin technology — all without requiring a backend server.
 
-### 📊 **Interactive Dashboard**
-- Real-time charts and visualizations
-- Responsive design for all devices
-- Live data streaming with Chart.js
-- Modern glassmorphism UI design
+---
 
-## 🛠️ Installation & Setup
+## Features
 
-### Two Versions Available
+**Real-Time IoT Simulation**
+Simulates ESP32 sensor nodes streaming temperature, humidity, vibration, and current data in JSON format, including MPU6050-style accelerometer and gyroscope readings.
 
-This project now includes **two frontend implementations**:
-1. **React Version** (recommended) - Modern React + Vite with hot reloading
-2. **Vanilla JS Version** - Pure HTML/CSS/JS for simple deployment
+**Edge AI Anomaly Detection**
+Detects faults in real time using multi-parameter threshold analysis with dynamic confidence scoring and color-coded visual alerts.
 
-### Option 1: React Version (Recommended)
+**Federated Learning Network**
+Simulates a multi-node distributed training environment where only model updates are shared between nodes, preserving data privacy while aggregating a global model.
 
-#### Prerequisites
-- Node.js 18+ and npm
-- Modern web browser
+**Blockchain Audit Logging**
+Logs system events to a simulated Proof of Authority (PoA) blockchain with immutable records, real-time block generation, and cryptographic hash simulation.
 
-#### Quick Start
-```bash
-# Navigate to React app directory
-cd react-app
+**Digital Twin & Predictive Analytics**
+Models virtual equipment components (motor, bearing, temperature control), forecasts degradation over a 12-hour window, and schedules proactive maintenance alerts.
 
-# Install dependencies
-npm install
+**Interactive Dashboard**
+Responsive, real-time visualizations built with Chart.js, CSS Grid, and a glassmorphism UI — compatible with desktop, tablet, and mobile devices.
 
-# Start development server
-npm run dev
-```
+---
 
-The app will be available at [http://localhost:5173/](http://localhost:5173/)
+## Prerequisites
 
-#### Build for Production
-```bash
-# Create optimized production build
-npm run build
+- A modern web browser (see [Browser Compatibility](#browser-compatibility))
+- [Visual Studio Code](https://code.visualstudio.com/) *(recommended)*
+- [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) VS Code extension
 
-# Preview production build
-npm run preview
-```
+---
 
-### Option 2: Vanilla JS Version
+## Installation
 
-#### Prerequisites
-- Web browser (Chrome, Firefox, Safari, Edge)
-- VS Code (recommended)
-- Live Server extension for VS Code
+1. Clone or download the repository.
+2. Open the project folder in VS Code.
+3. Install the Live Server extension if not already present.
+4. Right-click `index.html` and select **Open with Live Server**.
+5. The dashboard will open in your default browser.
 
-#### Quick Start
+---
 
-1. **Open in VS Code**
-2. **Install Live Server extension** (if not already installed)
-3. **Right-click on `index.html`** → "Open with Live Server"
-4. **Start simulation** and begin monitoring!
+## Project Structure
 
-### Project Structure
 ```
 iot-predictive-maintenance/
-│
-├── react-app/              # React + Vite version
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Dashboard.jsx
-│   │   │   └── Dashboard.css
-│   │   ├── utils/
-│   │   │   └── dataGenerator.js
-│   │   ├── App.jsx
-│   │   ├── App.css
-│   │   └── main.jsx
-│   ├── package.json
-│   └── vite.config.js
-│
-├── iot/                    # Python backend services
-│   ├── client_sim.py       # ESP32 simulator
-│   ├── esp32_data_server.py # Flask API
-│   ├── federated_ml.py     # Federated learning
-│   ├── distill.py          # Model distillation
-│   ├── model_utils.py      # ML utilities
-│   └── generate_dummy_data.py
-│
-├── index.html              # Vanilla JS version
+├── index.html              # Application entry point
 ├── styles/
-│   └── main.css
+│   └── main.css            # Global styles and CSS variables
 ├── scripts/
-│   └── app.js
-├── requirements.txt        # Python dependencies
-└── README.md              # This file
+│   └── app.js              # Core application logic
+├── assets/                 # Static assets (images, icons)
+└── README.md
 ```
 
-## 🎮 Usage
+---
 
-### Starting the System
-1. Click **"Start Simulation"** to begin real-time data streaming
-2. Watch the dashboard come alive with sensor data, charts, and analytics
-3. Monitor the federated learning network as nodes update their models
-4. Observe blockchain blocks being added as events occur
+## Usage
 
-### Testing Anomalies
-1. Click **"Inject Anomaly"** to simulate equipment failure
-2. Watch the AI detection system respond with alerts
-3. See how the digital twin health scores degrade
-4. Notice new blockchain blocks recording the anomaly events
+**Starting the system**
+Click **Start Simulation** to begin real-time data streaming. Sensor readings, chart updates, federated learning activity, and blockchain events will begin immediately.
 
-### Keyboard Shortcuts
-- **Ctrl + S**: Start/Stop simulation
-- **Ctrl + A**: Inject anomaly
+**Injecting anomalies**
+Click **Inject Anomaly** to simulate an equipment fault. The anomaly detection engine will trigger alerts, digital twin health scores will degrade, and the event will be recorded on the blockchain.
 
-## 🔧 Customization
+**Keyboard shortcuts**
 
-### Sensor Data Configuration
-Modify the `generateSensorData()` function in `scripts/app.js`:
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl + S` | Start / Stop simulation |
+| `Ctrl + A` | Inject anomaly |
+
+---
+
+## Configuration
+
+**Sensor baseline values** — edit `generateSensorData()` in `scripts/app.js`:
+
 ```javascript
-const baseTemp = 28;        // Base temperature
-const baseHumidity = 65;    // Base humidity
-const baseCurrent = 0.15;   // Base current
+const baseTemp      = 28;    // Degrees Celsius
+const baseHumidity  = 65;    // Percentage
+const baseCurrent   = 0.15;  // Amperes
 ```
 
-### Anomaly Thresholds
-Adjust detection thresholds in `detectAnomalies()` function:
+**Anomaly thresholds** — edit `detectAnomalies()` in `scripts/app.js`:
+
 ```javascript
-if (data.temperature > 40 || data.temperature < 15) {
-    // Temperature anomaly threshold
-}
-if (data.vibrationMagnitude > 0.1) {
-    // Vibration anomaly threshold
-}
+if (data.temperature > 40 || data.temperature < 15) { /* temperature fault */ }
+if (data.vibrationMagnitude > 0.1)                  { /* vibration fault */   }
 ```
 
-### UI Styling
-Customize colors and styles in `styles/main.css`:
+**UI theme** — edit CSS variables in `styles/main.css`:
+
 ```css
 :root {
-    --primary-color: #4ecdc4;
-    --warning-color: #ffa726;
+    --primary-color:  #4ecdc4;
+    --warning-color:  #ffa726;
     --critical-color: #ff5252;
 }
 ```
 
-## 📱 Responsive Design
+---
 
-The dashboard is fully responsive and works on:
-- 🖥️ Desktop computers
-- 💻 Laptops
-- 📱 Tablets
-- 📱 Mobile phones
+## Technical Reference
 
-## 🌐 Browser Compatibility
+**Technologies**
 
-- ✅ Chrome 80+
-- ✅ Firefox 75+
-- ✅ Safari 13+
-- ✅ Edge 80+
+| Layer | Technology |
+|-------|------------|
+| Markup | HTML5 |
+| Styling | CSS3 — Grid, Flexbox, CSS Variables, Keyframe Animations |
+| Logic | JavaScript ES6+ (modular, event-driven) |
+| Charts | Chart.js 3.9.1 |
 
-## 🚀 Deployment Options
+**IoT Data Format**
 
-### Local Development
-- Use VS Code Live Server for instant development
-- No build process required - pure HTML/CSS/JS
-
-### Web Hosting
-- Upload files to any web hosting service
-- Works with GitHub Pages, Netlify, Vercel, etc.
-- No server-side requirements
-
-### Docker (Optional)
-```dockerfile
-FROM nginx:alpine
-COPY . /usr/share/nginx/html
-EXPOSE 80
-```
-
-## 🔍 Technical Details
-
-### Technologies Used
-
-#### React Version
-- **Frontend Framework**: React 18 with Vite
-- **UI Components**: Custom components with hooks
-- **Charts**: Chart.js 4+ with react-chartjs-2
-- **Icons**: Lucide React
-- **Styling**: CSS Modules, CSS Grid, Flexbox, CSS Variables
-- **Build Tool**: Vite for fast HMR and optimized builds
-- **Architecture**: Component-based, hooks-driven
-
-#### Vanilla JS Version
-- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
-- **Charts**: Chart.js 3.9.1
-- **Styling**: CSS Grid, Flexbox, CSS Variables
-- **Animation**: CSS Keyframes, Transitions
-- **Architecture**: Modular JavaScript, Event-driven
-
-#### Python Backend
-- **Framework**: Flask with Flask-CORS
-- **ML Libraries**: Scikit-learn, NumPy, Pandas
-- **Visualization**: Matplotlib
-- **Data Format**: JSONL for streaming sensor data
-
-### Data Format
-The system uses JSON format for IoT data:
 ```json
 {
   "deviceId": "sim_esp32_01",
   "timestamp": 1690000000000,
   "temperature": 29.5,
   "humidity": 67.8,
-  "accel": {"x": 0.02, "y": -0.05, "z": 0.88},
-  "gyro": {"x": 0.18, "y": 0.16, "z": -0.10},
+  "accel": { "x": 0.02, "y": -0.05, "z": 0.88 },
+  "gyro":  { "x": 0.18, "y": 0.16,  "z": -0.10 },
   "current": 0.12,
   "vibrationMagnitude": 0.094
 }
 ```
 
-## 🤝 Contributing
+---
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+## Browser Compatibility
 
-## 📝 License
-
-This project is open source and available under the MIT License.
-
-## 📞 Support
-
-For questions or issues:
-- Open an issue on GitHub
-- Check the browser console for error messages
-- Ensure all files are properly linked
-
-## 🎯 Future Enhancements
-
-- [ ] Real ESP32 hardware integration
-- [ ] MongoDB data persistence
-- [ ] Advanced ML models with TensorFlow.js
-- [ ] Real blockchain integration
-- [ ] Multi-tenant support
-- [ ] Advanced security features
-- [ ] Mobile app companion
+| Browser | Minimum Version |
+|---------|----------------|
+| Chrome  | 80+ |
+| Firefox | 75+ |
+| Safari  | 13+ |
+| Edge    | 80+ |
 
 ---
 
-**Built with ❤️ for Industry 4.0 and IoT innovation**
+## Deployment
+
+**Local development**
+Use VS Code Live Server. No build step or server-side dependencies are required.
+
+**Static web hosting**
+Upload all project files to any static hosting provider. The following platforms are compatible out of the box: GitHub Pages, Netlify, Vercel.
+
+**Docker**
+
+```dockerfile
+FROM nginx:alpine
+COPY . /usr/share/nginx/html
+EXPOSE 80
+```
+
+---
+
+## Roadmap
+
+- [ ] Real ESP32 hardware integration
+- [ ] MongoDB time-series data persistence
+- [ ] Advanced ML inference with TensorFlow.js
+- [ ] Production blockchain integration
+- [ ] Multi-tenant architecture
+- [ ] Companion mobile application
+- [ ] Role-based access control
+
+---
+
+## Contributing
+
+1. Fork the repository.
+2. Create a feature branch: `git checkout -b feature/your-feature-name`
+3. Commit your changes with clear, descriptive messages.
+4. Open a pull request describing the change and its motivation.
+
+Please ensure all changes are tested across supported browsers before submitting.
+
+---
+
+## License
+
+This project is released under the [MIT License](LICENSE).
+
+---
+
+*Built for Industry 4.0 and the Industrial Internet of Things.*
