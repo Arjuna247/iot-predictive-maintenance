@@ -34,7 +34,7 @@ export default function AlertBanner({ alerts }) {
             <div style={{ color: '#fca5a5', fontSize: 13 }}>{a.reason}</div>
             <div style={{ color: '#94a3b8', fontSize: 11, marginTop: 2 }}>
               T:{a.temperature?.toFixed(1)}°C  V:{a.vibration?.toFixed(3)}g  I:{a.current?.toFixed(2)}A
-              &nbsp;·&nbsp; {new Date(a.timestamp).toLocaleTimeString()}
+              &nbsp;·&nbsp; {new Date(a.timestamp.endsWith('Z') ? a.timestamp : a.timestamp + 'Z').toLocaleTimeString()}
             </div>
           </div>
           <button onClick={() => dismiss(i)} style={{

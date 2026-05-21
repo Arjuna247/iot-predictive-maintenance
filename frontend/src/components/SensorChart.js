@@ -54,8 +54,9 @@ export default function SensorChart({ data, metric, thresholds = {} }) {
   // 3. Merge into unified time-indexed array
   const timeMap = new Map();
   sortedData.forEach(d => {
-    // Use toLocaleTimeString for a realtime feel (HH:MM:SS)
-    const dateObj = new Date(d.timestamp);
+    if (!d.timestamp) return;
+    // Force UTC parsing by appending 'Z' if missing, then toLocaleTimeString converts to current local timing
+    const dateObj = new Date(d.timestamp.endsWith('Z') ? d.timestamp : d.timestamp + 'Z');
     const timeKey = dateObj.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
     
     if (!timeMap.has(timeKey)) {
@@ -83,17 +84,25 @@ export default function SensorChart({ data, metric, thresholds = {} }) {
       </h3>
       <ResponsiveContainer width="100%" height={180}>
         <LineChart data={merged} margin={{ top: 4, right: 8, bottom: 0, left: -10 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#2d3148" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#2d3148" vertical={false} />
           <XAxis
             dataKey="time"
-            tick={{ fill: '#64748b', fontSize: 10 }}
+            tick={{ fill: '#64748b', fontSize: 9 }}
             interval="preserveStartEnd"
+            minTickGap={40}
+            axisLine={{ stroke: '#2d3148' }}
+            tickLine={false}
           />
-          <YAxis tick={{ fill: '#64748b', fontSize: 10 }} />
+          <YAxis 
+            tick={{ fill: '#64748b', fontSize: 10 }}
+            axisLine={false}
+            tickLine={false}
+            width={35}
+          />
           <Tooltip content={<CustomTooltip unit={meta.unit} />} />
           <Legend
-            wrapperStyle={{ fontSize: 11, paddingTop: 6 }}
-            formatter={v => v === 'physical' ? '🔌 Physical' : '🖥️ Simulated'}
+            wrapperStyle={{ fontSize: 10, paddingTop: 8 }}
+            formatter={v => v === 'physical' ? 'Physical' : 'Simulated'}
           />
           {thresholds.max && (
             <ReferenceLine y={thresholds.max} stroke="#ef4444" strokeDasharray="4 2"

@@ -174,7 +174,7 @@ function AnomalySidebar({ anomalies }) {
                   {d.node_id}
                 </span>
                 <span style={{ fontSize: 10, color: '#64748b' }}>
-                  {new Date(d.timestamp).toLocaleTimeString()}
+                  {new Date(d.timestamp.endsWith('Z') ? d.timestamp : d.timestamp + 'Z').toLocaleTimeString()}
                 </span>
               </div>
               <div
@@ -204,7 +204,6 @@ export default function Dashboard() {
   const [nodeStats,    setNodeStats]    = useState([]);
   const [alerts,       setAlerts]       = useState([]);
   const [connected,    setConnected]    = useState(false);
-  const [activeMetric, setActiveMetric] = useState('temperature');
   const pollRef = useRef(null);
 
   // ── Data loading ──────────────────────────────────────────────────────────
@@ -264,7 +263,24 @@ export default function Dashboard() {
         totalBuffered={sensorData.length}
       />
 
-      {/* ── Two-column Command Center grid ──────────────────────────────── */}
+      {/* ── Top Section: Three Real-time Charts ─────────────────────────── */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+        gap: 16,
+        marginBottom: 20
+      }}>
+        {METRICS.map(m => (
+          <SensorChart
+            key={m.id}
+            data={sensorData}
+            metric={m.id}
+            thresholds={THRESHOLDS[m.id]}
+          />
+        ))}
+      </div>
+
+      {/* ── Bottom Section: Detail Cards + Sidebar ─────────────────────── */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: '1fr 300px',
@@ -272,24 +288,20 @@ export default function Dashboard() {
         alignItems: 'start',
       }}>
 
-        {/* ── LEFT: Main content ─────────────────────────────────────────── */}
+        {/* ── LEFT: Node status details ─────────────────────────────────── */}
         <div>
-          {/* Metric tab switcher */}
-          <MetricTabs active={activeMetric} onChange={setActiveMetric} />
-
-          {/* Active chart */}
-          <SensorChart
-            data={sensorData}
-            metric={activeMetric}
-            thresholds={THRESHOLDS[activeMetric]}
-          />
-
-          {/* Node detail cards */}
-          {nodeStats.length > 0 && (
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 16 }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12, color: '#94a3b8' }}>
+            🛰️ Active Edge Nodes
+          </h2>
+          {nodeStats.length > 0 ? (
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               {nodeStats.map(n => (
                 <NodeCard key={n.node_id} node={n} />
               ))}
+            </div>
+          ) : (
+            <div style={{ padding: 40, textAlign: 'center', background: '#1a1d2e', borderRadius: 12, border: '1px dashed #2d3148', color: '#64748b' }}>
+              Waiting for node data...
             </div>
           )}
         </div>
