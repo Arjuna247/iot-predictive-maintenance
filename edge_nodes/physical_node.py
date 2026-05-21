@@ -274,18 +274,18 @@ class PhysicalNode:
         )
 
         payload = {
-            'node_id':        self.node_id,
+            'device_id':      self.node_id,
             'temperature':    reading['temperature'],
-            'vibration':      reading['vibration'],
-            'current':        reading['current'],
+            'ax':             reading['vibration'],
+            'ay':             0,
+            'az':             0,
+            'current_voltage': reading['current'],
+            'humidity':       50.0, # dummy value
             'timestamp':      ts,
-            'hash':           ph,
-            'is_anomaly':     is_anom,
-            'anomaly_reason': reason,
         }
 
         try:
-            resp = requests.post(f'{BACKEND_URL}/api/data', json=payload, timeout=5)
+            resp = requests.post(f'{BACKEND_URL}/sensor-data', json=payload, timeout=5)
             if resp.status_code == 201:
                 result = resp.json()
                 flag   = '🚨 ANOMALY' if is_anom else '✅ OK'
