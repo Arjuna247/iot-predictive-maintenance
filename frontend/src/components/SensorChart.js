@@ -38,21 +38,38 @@ export default function SensorChart({ data, metric, thresholds = {} }) {
   const meta = METRIC_META[metric];
   if (!meta) return null;
 
-  // Separate data by node
-  const physData = data.filter(d => d.node_id?.includes('physical')).slice(-60);
-  const simData  = data.filter(d => d.node_id?.includes('simulated')).slice(-60);
+  // 1. Sort data chronologically (oldest first) for Recharts
+  const sortedData = [...(data || [])].sort((a, b) => 
+    new Date(a.timestamp) - new Date(b.timestamp)
+  );
 
-  // Merge into time-indexed array for the chart
-  const merged = [];
-  const maxLen = Math.max(physData.length, simData.length);
-  for (let i = 0; i < maxLen; i++) {
-    merged.push({
-      idx: i,
-      time:     (physData[i] || simData[i])?.timestamp?.slice(11, 19) ?? '',
-      physical: physData[i]?.[metric] ?? null,
-      simulated: simData[i]?.[metric] ?? null,
-    });
-  }
+  // 2. Identify nodes dynamically or fallback to common prefixes
+  const nodeIds = [...new Set(sortedData.map(d => d.node_id))];
+  const physId = nodeIds.find(id => id.includes('physical') || id.includes('ESP32')) || nodeIds[0];
+  const simId  = nodeIds.find(id => id.includes('simulated') && id !== physId) || nodeIds[1];
+
+  const physData = sortedData.filter(d => d.node_id === physId).slice(-60);
+  const simData  = sortedData.filter(d => d.node_id === simId).slice(-60);
+
+  // 3. Merge into unified time-indexed array
+  const timeMap = new Map();
+  sortedData.forEach(d => {
+    // Use toLocaleTimeString for a realtime feel (HH:MM:SS)
+    const dateObj = new Date(d.timestamp);
+    const timeKey = dateObj.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    
+    if (!timeMap.has(timeKey)) {
+      timeMap.set(timeKey, { time: timeKey, timeMs: dateObj.getTime() });
+    }
+    const entry = timeMap.get(timeKey);
+    
+    if (d.node_id === physId) entry.physical = d[metric];
+    if (d.node_id === simId) entry.simulated = d[metric];
+  });
+
+  const merged = Array.from(timeMap.values())
+    .sort((a, b) => a.timeMs - b.timeMs)
+    .slice(-60); // Keep latest 60 time buckets
 
   return (
     <div style={{

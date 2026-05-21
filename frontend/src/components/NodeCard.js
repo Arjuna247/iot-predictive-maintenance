@@ -12,7 +12,7 @@ const Stat = ({ label, value, unit, color }) => (
 export default function NodeCard({ node }) {
   if (!node) return null;
   const { node_id, data_count, last_seen, avg_temperature, avg_vibration, avg_current, anomaly_count } = node;
-  const isPhysical = node_id.includes('physical');
+  const isPhysical = node_id?.includes('physical');
   const lastSeenDate = last_seen ? new Date(last_seen) : null;
   const ageMs = lastSeenDate ? Date.now() - lastSeenDate.getTime() : Infinity;
   const online = ageMs < 10000;

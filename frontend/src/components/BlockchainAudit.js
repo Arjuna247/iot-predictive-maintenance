@@ -112,7 +112,7 @@ export default function BlockchainAudit() {
           </thead>
           <tbody>
             {blocks.map((b, i) => (
-              <tr key={b.id}
+              <tr key={b._id || b.id || i}
                 style={{
                   borderBottom: '1px solid #1e2235',
                   background: b.is_valid ? 'transparent' : 'rgba(239,68,68,0.05)',
@@ -128,20 +128,32 @@ export default function BlockchainAudit() {
                   title={b.data_hash}>{b.data_hash?.slice(0, 12)}…</td>
                 <td style={{ padding: '7px 10px', fontFamily: 'monospace', color: '#64748b', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
                   title={b.stored_hash}>{b.stored_hash?.slice(0, 12)}…</td>
-                <td style={{ padding: '7px 10px' }}><Badge ok={b.hash_valid}>{b.hash_valid ? '✓' : '✗'}</Badge></td>
-                <td style={{ padding: '7px 10px' }}><Badge ok={b.chain_valid}>{b.chain_valid ? '✓' : '✗'}</Badge></td>
-                <td style={{ padding: '7px 10px' }}><Badge ok={b.data_integrity}>{b.data_integrity ? '✓' : '✗'}</Badge></td>
                 <td style={{ padding: '7px 10px' }}>
-                  <Badge ok={b.is_valid}>{b.is_valid ? '✅ Valid' : '🔴 TAMPERED'}</Badge>
+                  <Badge ok={b.hash_valid ?? (audit?.integrity_score === 100)}>
+                    {b.hash_valid === undefined ? '?' : (b.hash_valid ? '✓' : '✗')}
+                  </Badge>
+                </td>
+                <td style={{ padding: '7px 10px' }}>
+                  <Badge ok={b.chain_valid ?? (audit?.integrity_score === 100)}>
+                    {b.chain_valid === undefined ? '?' : (b.chain_valid ? '✓' : '✗')}
+                  </Badge>
+                </td>
+                <td style={{ padding: '7px 10px' }}>
+                  <Badge ok={b.data_integrity ?? (audit?.integrity_score === 100)}>
+                    {b.data_integrity === undefined ? '?' : (b.data_integrity ? '✓' : '✗')}
+                  </Badge>
+                </td>
+                <td style={{ padding: '7px 10px' }}>
+                  <Badge ok={b.is_valid ?? (audit?.integrity_score === 100)}>
+                    {b.is_valid === undefined ? '✅ Unverified' : (b.is_valid ? '✅ Valid' : '🔴 TAMPERED')}
+                  </Badge>
                 </td>
                 {tamperMode && (
                   <td style={{ padding: '7px 10px' }}>
-                    {b.sensor_data_id && (
-                      <button onClick={() => handleTamper(b.sensor_data_id)}
-                        style={{ ...btnStyle('#ef4444'), padding: '3px 8px', fontSize: 11 }}>
-                        Tamper
-                      </button>
-                    )}
+                    <button onClick={() => handleTamper(b.sensor_data_id || b._id)}
+                      style={{ ...btnStyle('#ef4444'), padding: '3px 8px', fontSize: 11 }}>
+                      Tamper
+                    </button>
                   </td>
                 )}
               </tr>

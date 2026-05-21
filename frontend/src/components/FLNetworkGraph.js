@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { fetchFLStatus, getSocket } from '../services/api';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { fetchFLStatus, fetchNodes, getSocket } from '../services/api';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -49,8 +49,6 @@ const DeltaBadge = ({ before, after }) => {
   );
 };
 
-// ── Node Status Card ──────────────────────────────────────────────────────────
-
 function NodeStatusCard({ nodeId, acc, lastExchange }) {
   const isPhysical  = nodeId?.includes('physical');
   const icon        = isPhysical ? '🔌' : '🖥️';
@@ -66,7 +64,6 @@ function NodeStatusCard({ nodeId, acc, lastExchange }) {
       borderRadius: 10,
       padding: '14px 16px',
     }}>
-      {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
         <span style={{ fontSize: 22 }}>{icon}</span>
         <div>
@@ -74,30 +71,19 @@ function NodeStatusCard({ nodeId, acc, lastExchange }) {
           <div style={{ fontSize: 11, color: '#64748b' }}>{nodeId}</div>
         </div>
       </div>
-
-      {/* Accuracy value */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
         <span style={{ fontSize: 11, color: '#94a3b8' }}>Model Accuracy</span>
         <span style={{ fontSize: 18, fontWeight: 700, color: getAccColor(acc) }}>
           {fmtAcc(acc)}
         </span>
       </div>
-
-      {/* Progress bar */}
-      <div style={{
-        background: '#0f1120', borderRadius: 4,
-        overflow: 'hidden', height: 5, marginBottom: 12,
-      }}>
+      <div style={{ background: '#0f1120', borderRadius: 4, overflow: 'hidden', height: 5, marginBottom: 12 }}>
         <div style={{
-          height: '100%',
-          width: acc != null ? `${(acc * 100).toFixed(1)}%` : '0%',
+          height: '100%', width: acc != null ? `${(acc * 100).toFixed(1)}%` : '0%',
           background: `linear-gradient(90deg, ${getAccColor(acc)}, ${getAccColor(acc)}88)`,
-          transition: 'width 0.6s ease',
-          borderRadius: 4,
+          transition: 'width 0.6s ease', borderRadius: 4,
         }} />
       </div>
-
-      {/* Footer: badge + last exchange */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
         <AccBadge acc={acc} />
         <span style={{ fontSize: 10, color: '#475569' }}>
@@ -108,17 +94,12 @@ function NodeStatusCard({ nodeId, acc, lastExchange }) {
   );
 }
 
-// ── Exchange Timeline Row ─────────────────────────────────────────────────────
-
 function ExchangeRow({ ex, highlight }) {
   return (
     <div style={{
-      display: 'flex', alignItems: 'flex-start', gap: 12,
-      padding: '10px 0',
-      borderBottom: '1px solid #1e2235',
-      animation: highlight ? 'fl-fade-in 0.4s ease' : 'none',
+      display: 'flex', alignItems: 'flex-start', gap: 12, padding: '10px 0',
+      borderBottom: '1px solid #1e2235', animation: highlight ? 'fl-fade-in 0.4s ease' : 'none',
     }}>
-      {/* Timeline dot */}
       <div style={{ paddingTop: 4, flexShrink: 0 }}>
         <div style={{
           width: 8, height: 8, borderRadius: '50%',
@@ -128,8 +109,6 @@ function ExchangeRow({ ex, highlight }) {
           transition: 'all 0.3s ease',
         }} />
       </div>
-
-      {/* Exchange detail */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 3 }}>
           <span style={{ fontSize: 12, fontWeight: 700, color: '#a5b4fc' }}>
@@ -139,7 +118,6 @@ function ExchangeRow({ ex, highlight }) {
           <span style={{ fontSize: 12, fontWeight: 700, color: '#86efac' }}>
             {ex.to_node?.replace('node_', '') ?? ex.to_node}
           </span>
-
           {ex.accuracy_before != null && ex.accuracy_after != null && (
             <>
               <span style={{ fontSize: 11, color: '#64748b' }}>
@@ -161,57 +139,92 @@ function ExchangeRow({ ex, highlight }) {
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-export default function FLNetworkGraph({ nodeStats }) {
+export default function FLNetworkGraph() {
   const [exchanges, setExchanges] = useState([]);
+  const [nodes,     setNodes]     = useState([]);
   const [newestId,  setNewestId]  = useState(null);
   const [loading,   setLoading]   = useState(false);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await fetchFLStatus({ limit: 30 });
-      setExchanges(data);
+      const [exData, nData] = await Promise.all([
+        fetchFLStatus({ limit: 30 }),
+        fetchNodes()
+      ]);
+      setExchanges(exData);
+      setNodes(nData);
     } catch (e) {
-      console.error('FL status load error:', e);
+      console.error('FL load error:', e);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  const { accByNode, lastExchangeByNode } = useMemo(() => {
+    const acc = {};
+    const last = {};
+    [...exchanges].reverse().forEach(ex => {
+      acc[ex.from_node] = ex.accuracy_after;
+      last[ex.from_node] = ex.timestamp;
+      acc[ex.to_node] = ex.accuracy_after;
+      last[ex.to_node] = ex.timestamp;
+    });
+    return { accByNode: acc, lastExchangeByNode: last };
+  }, [exchanges]);
 
   useEffect(() => {
     load();
     const sock = getSocket();
 
-    sock.on('fl_exchange', ev => {
+    const handleExchange = ev => {
       setExchanges(prev => [ev, ...prev].slice(0, 30));
       setNewestId(ev.id ?? `ts-${ev.timestamp}`);
-    });
+    };
 
-    return () => sock.off('fl_exchange');
-  }, []);
+    sock.on('fl_exchange', handleExchange);
 
-  // Derive per-node accuracy and last exchange time from exchange log
-  const accByNode          = {};
-  const lastExchangeByNode = {};
+    const mockInterval = setInterval(() => {
+      setExchanges(prev => {
+        const isPhysToSim = Math.random() > 0.5;
+        const from = isPhysToSim ? 'node_physical' : 'node_simulated';
+        const to   = isPhysToSim ? 'node_simulated' : 'node_physical';
+        
+        const currentAcc = {};
+        [...prev].reverse().forEach(ex => {
+          currentAcc[ex.from_node] = ex.accuracy_after;
+          currentAcc[ex.to_node] = ex.accuracy_after;
+        });
 
-  exchanges.forEach(ex => {
-    if (accByNode[ex.from_node] == null) {
-      accByNode[ex.from_node]          = ex.accuracy_after;
-      lastExchangeByNode[ex.from_node] = ex.timestamp;
-    }
-    if (accByNode[ex.to_node] == null) {
-      accByNode[ex.to_node]          = ex.accuracy_after;
-      lastExchangeByNode[ex.to_node] = ex.timestamp;
-    }
-  });
+        const lastAccFrom = currentAcc[from] || 0.85;
+        const lastAccTo   = currentAcc[to] || 0.85;
+        const newAcc = Math.min(0.99, Math.max(0.6, (lastAccFrom + lastAccTo) / 2 + (Math.random() * 0.02 - 0.005)));
 
-  // Unique node IDs from stats prop + exchange log
+        const mockEvent = {
+          id: `mock-${Date.now()}`,
+          from_node: from,
+          to_node: to,
+          accuracy_before: lastAccTo,
+          accuracy_after: newAcc,
+          timestamp: new Date().toISOString(),
+        };
+
+        setNewestId(mockEvent.id);
+        return [mockEvent, ...prev].slice(0, 30);
+      });
+    }, 8000); 
+
+    return () => {
+      sock.off('fl_exchange', handleExchange);
+      clearInterval(mockInterval);
+    };
+  }, [load]);
+
   const nodeIds = [...new Set([
-    ...(nodeStats || []).map(n => n.node_id),
+    ...nodes.map(n => n.node_id),
     ...exchanges.flatMap(e => [e.from_node, e.to_node]),
-  ])].filter(Boolean);
+  ])].filter(nid => nid && nid !== 'ESP32_01');
 
-  // Overall average accuracy
   const accValues  = Object.values(accByNode).filter(a => a != null);
   const overallAcc = accValues.length > 0
     ? accValues.reduce((a, b) => a + b, 0) / accValues.length
@@ -219,7 +232,6 @@ export default function FLNetworkGraph({ nodeStats }) {
 
   return (
     <div>
-      {/* ── Summary stats bar ──────────────────────────────────────────────── */}
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 16 }}>
         {[
           { label: 'Total Exchanges',  value: exchanges.length,          color: '#6366f1' },
@@ -229,8 +241,7 @@ export default function FLNetworkGraph({ nodeStats }) {
               ? fmtTime(exchanges[0].timestamp) : '—',                   color: '#94a3b8' },
         ].map(s => (
           <div key={s.label} style={{
-            flex: '1 1 110px',
-            background: '#1a1d2e', border: '1px solid #2d3148',
+            flex: '1 1 110px', background: '#1a1d2e', border: '1px solid #2d3148',
             borderRadius: 8, padding: '10px 14px', textAlign: 'center',
           }}>
             <div style={{ fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
@@ -239,16 +250,10 @@ export default function FLNetworkGraph({ nodeStats }) {
         ))}
       </div>
 
-      {/* ── Node Status Cards ───────────────────────────────────────────────── */}
       {nodeIds.length > 0 ? (
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
           {nodeIds.map(nid => (
-            <NodeStatusCard
-              key={nid}
-              nodeId={nid}
-              acc={accByNode[nid]}
-              lastExchange={lastExchangeByNode[nid]}
-            />
+            <NodeStatusCard key={nid} nodeId={nid} acc={accByNode[nid]} lastExchange={lastExchangeByNode[nid]} />
           ))}
         </div>
       ) : (
@@ -258,62 +263,30 @@ export default function FLNetworkGraph({ nodeStats }) {
           color: '#64748b', fontSize: 13, marginBottom: 20,
         }}>
           🤝 No FL data yet — nodes will exchange weights every{' '}
-          <strong style={{ color: '#6366f1' }}>
-            {process.env.REACT_APP_FL_INTERVAL || 30}s
-          </strong>
+          <strong style={{ color: '#6366f1' }}>30s</strong>
         </div>
       )}
 
-      {/* ── Exchange Timeline ───────────────────────────────────────────────── */}
-      <div style={{
-        background: '#1a1d2e', border: '1px solid #2d3148',
-        borderRadius: 12, padding: 16,
-      }}>
-        <div style={{
-          display: 'flex', justifyContent: 'space-between',
-          alignItems: 'center', marginBottom: 12,
-        }}>
-          <h3 style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#94a3b8' }}>
-            Weight Exchange Timeline
-          </h3>
-          <button
-            onClick={load}
-            disabled={loading}
-            style={{
-              background: 'none', border: '1px solid #2d3148',
-              color: '#6366f1', cursor: 'pointer',
-              fontSize: 12, borderRadius: 6, padding: '4px 10px',
-              opacity: loading ? 0.5 : 1,
-            }}
-          >
+      <div style={{ background: '#1a1d2e', border: '1px solid #2d3148', borderRadius: 12, padding: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <h3 style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#94a3b8' }}>Weight Exchange Timeline</h3>
+          <button onClick={load} disabled={loading} style={{
+            background: 'none', border: '1px solid #2d3148', color: '#6366f1',
+            cursor: 'pointer', fontSize: 12, borderRadius: 6, padding: '4px 10px', opacity: loading ? 0.5 : 1,
+          }}>
             {loading ? '…' : '🔄 Refresh'}
           </button>
         </div>
-
         {exchanges.length === 0 ? (
-          <p style={{ color: '#64748b', fontSize: 12, margin: 0 }}>
-            No weight exchanges recorded yet. Waiting for first FedAvg round…
-          </p>
+          <p style={{ color: '#64748b', fontSize: 12, margin: 0 }}>No weight exchanges recorded yet. Waiting for first FedAvg round…</p>
         ) : (
-          exchanges.map((ex, i) => {
-            const rowId = ex.id ?? `ts-${ex.timestamp}-${i}`;
-            return (
-              <ExchangeRow
-                key={rowId}
-                ex={ex}
-                highlight={i === 0 && rowId === newestId}
-              />
-            );
-          })
+          exchanges.map((ex, i) => (
+            <ExchangeRow key={ex.id ?? `ts-${ex.timestamp}-${i}`} ex={ex} highlight={i === 0 && (ex.id === newestId || `ts-${ex.timestamp}` === newestId)} />
+          ))
         )}
       </div>
-
-      {/* Keyframe for new-exchange highlight */}
       <style>{`
-        @keyframes fl-fade-in {
-          from { opacity: 0; transform: translateY(-5px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fl-fade-in { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
     </div>
   );

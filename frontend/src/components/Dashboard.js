@@ -51,9 +51,9 @@ function NodeSummaryBar({ nodeStats, sensorData, connected, totalBuffered }) {
       ) : (
         nodeStats.map((n, idx) => {
           const latest = [...sensorData]
-            .filter(d => d.node_id === n.node_id)
+            .filter(d => d?.node_id === n?.node_id)
             .slice(-1)[0] || {};
-          const isPhysical = n.node_id.includes('physical');
+          const isPhysical = (n?.node_id || '').includes('physical');
 
           return (
             <React.Fragment key={n.node_id}>
@@ -63,7 +63,7 @@ function NodeSummaryBar({ nodeStats, sensorData, connected, totalBuffered }) {
                   color: isPhysical ? '#818cf8' : '#4ade80',
                   whiteSpace: 'nowrap',
                 }}>
-                  {isPhysical ? '🔌' : '🖥️'} {n.node_id.replace('node_', '')}
+                  {isPhysical ? '🔌' : '🖥️'} {(n?.node_id || 'unknown').replace('node_', '')}
                 </span>
                 <span style={{ fontSize: 11, color: '#fcd34d', whiteSpace: 'nowrap' }}>
                   🌡️ {latest.temperature != null ? `${latest.temperature.toFixed(1)}°C` : '—'}
@@ -234,8 +234,9 @@ export default function Dashboard() {
 
     sock.on('new_sensor_data', point => {
       setSensorData(prev => {
-        const next = [...prev, point];
-        return next.length > MAX_POINTS ? next.slice(-MAX_POINTS) : next;
+        // Prepend newest point to match loadData's sort order (newest-first)
+        const next = [point, ...prev];
+        return next.length > MAX_POINTS ? next.slice(0, MAX_POINTS) : next;
       });
     });
 
