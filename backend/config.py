@@ -6,10 +6,7 @@ class Config:
     # =========================
     # MongoDB
     # =========================
-    MONGO_URI = os.environ.get(
-        "MONGO_URI",
-        "mongodb+srv://harivisu06:hariharan123@cluster0.2fbexgr.mongodb.net/test?retryWrites=true&w=majority&appName=Cluster0"
-    )
+    MONGO_URI = os.environ.get("MONGO_URI")
 
     DATABASE_NAME = os.environ.get(
         "DATABASE_NAME",
