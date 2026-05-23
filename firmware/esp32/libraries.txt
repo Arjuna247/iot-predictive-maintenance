@@ -1,0 +1,4 @@
+ArduinoJson
+DHT sensor library
+Adafruit Unified Sensor
+MPU6050_light

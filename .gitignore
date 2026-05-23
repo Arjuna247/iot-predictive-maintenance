@@ -49,6 +49,7 @@ instance/
 # ── Environment / Secrets ─────────────────────────────────────────────────────
 .env
 !.env.example
+firmware/esp32/secrets.h
 
 # ── Node.js / React ───────────────────────────────────────────────────────────
 node_modules/
@@ -94,3 +95,7 @@ $RECYCLE.BIN/
 *.tmp
 *.swp
 *~
+
+GEMINI.md
+CLAUDE.md
+
